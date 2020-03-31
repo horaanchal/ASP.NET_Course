@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Application"
+    "\\Application",
+    "\\Application\\Application",
+    "\\Application\\Application\\App_Data"
   ],
   "SelectedNode": "\\Application",
   "PreviewInSolutionExplorer": false

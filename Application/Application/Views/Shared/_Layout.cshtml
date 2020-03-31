@@ -1,4 +1,4 @@
-﻿@model Application.ViewModels.RandomMovieViewModel
+﻿
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +9,7 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    @Html.Partial("_Navbar", Model.Movie)
+    @Html.Partial("_NavBar")
     <div class="container body-content">
         @RenderBody()
         <hr />

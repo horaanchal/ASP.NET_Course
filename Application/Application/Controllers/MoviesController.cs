@@ -6,6 +6,8 @@ using System.Web;
 using System.Web.Mvc;
 using Application.ViewModels;
 using Application.Models;
+using Application.Migrations;
+using System.Data.Entity.Validation;
 
 namespace Application.Controllers
 {
@@ -30,8 +32,36 @@ namespace Application.Controllers
             return View(movies);
         }
 
+        public ViewResult New()
+        {
+            var genres = _context.Genres.ToList();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(c => c.Id == id);
+
+            if (movie == null)
+                return HttpNotFound();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
         //private IEnumerable<Movie> GetMovies()
-            public ActionResult Details(int id)
+        public ActionResult Details(int id)
         {
             //return new List<Movie>
             //{
@@ -44,53 +74,45 @@ namespace Application.Controllers
             return View(movie);
         }
 
-
-
         // GET: Movies/Random
-        //public ActionResult Random()
-           
-        //[Route("movies/released/{year}/{month:regex(\\d{4}):range(1,12)}")]
-        //public ActionResult ByReleaseDate( int year, int month)
-        //{
-           // return Content(year + "/" + month);
-        //}
-        //{
-           // var movie = new Movie()
-            //{
-                //Name = "Hush!"
-            //};
-           // var customers = new List<Customer>
-           // {
-             //   new Customer {Name="Customer 1"},
-              //  new Customer {Name="Customer 2"}
-            //};
-            //var viewModel = new RandomMovieViewModel
-            //{
-              //  Movie = movie,
-               // Customers = customers
-           // };
-            //var viewResult = new ViewResult();
-            //viewResult.ViewData.Model
-            //ViewData["RandomMovie"] = movie;
-            //ViewBag.RandomMovie = movie;
-            //return View(viewModel);
-            //return Content("Hello People!");
-            //return HttpNotFound();
-            //return new EmptyResult();
-           // return RedirectToAction("Index", "Home", new { page = 1, sortBy = "name" });
-        //}
-        //public ActionResult Edit(int id)
-        //{
-            //return Content("id=" + id);
-        //}
-        //movies
-        //public ActionResult Index(int? pageIndex, string sortBy)
-        //{
-           // if (!pageIndex.HasValue)
-                //pageIndex = 1;
-            //if (String.IsNullOrWhiteSpace(sortBy))
-                //sortBy = "Name";
-            //return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
-        //}
+        public ActionResult Random()
+        {
+            var movie = new Movie() { Name = "Shrek!" };
+            var customers = new List<Customer>
+            {
+                new Customer { Name = "Customer 1" },
+                new Customer { Name = "Customer 2" }
+            };
+
+            var viewModel = new RandomMovieViewModel
+            {
+                Movie = movie,
+                Customers = customers
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            try
+            {
+            _context.SaveChanges();
+            }
+            catch(DbEntityValidationException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return RedirectToAction("Index", "Movies");
+        }
     }
 }
+
+        
